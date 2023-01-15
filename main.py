@@ -33,7 +33,7 @@ def encryptTeks(data, publicKeyFile):
     []
 
 
-    # save the encrypted data to file
+    # menyimpan hasil enkripsi ke dalam sebuah file
     encryptedFile = fileName + '_encrypted.' + fileExtension
     with open(encryptedFile, 'wb') as f:
         [ f.write(x) for x in (encryptedSessionKey, cipher.nonce, tag, ciphertext) ]
@@ -43,27 +43,25 @@ def encryptTeks(data, publicKeyFile):
 # Fungsi Dekripsi Teks
 def decryptTeks(dataFile, privateKeyFile):
 
-    # read private key from file
+    # membaca private key dari file
     with open(privateKeyFile, 'rb') as f:
         privateKey = f.read()
         # create private key object
         key = RSA.import_key(privateKey)
 
 
-    # read data from file
+    # membaca data dari file
     with open(dataFile, 'rb') as f:
-        # convert data to bytes
-        
 
-        # read the session key
+        # membaca session key
         encryptedSessionKey, nonce, tag, ciphertext = [ f.read(x) for x in (key.size_in_bytes(), 16, 16, -1) ]
 
     
-    # decrypt the session key
+    # mendekripsikan session key
     cipher = PKCS1_OAEP.new(key)
     sessionKey = cipher.decrypt(encryptedSessionKey)
 
-    # decrypt the data with the session key
+    # melakukan proses dekripsi pada data dengan session key
     cipher = AES.new(sessionKey, AES.MODE_EAX, nonce)
     data = cipher.decrypt_and_verify(ciphertext, tag)
 
@@ -82,7 +80,6 @@ input("Pencet tombol apapun untuk melanjutkan...")
 
 
 # MENU UTAMA PROGRAM
-
 while True:
     os.system('clear')  
     print("\nMAIN MENU")  
