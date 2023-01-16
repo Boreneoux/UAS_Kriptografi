@@ -6,6 +6,76 @@ import os
 # Deklarasi variabel global untuk menampung value dari hasil dekripsi yang dilakukan nanti
 hasilDecrypted = ''
 
+
+# Fungsi Enkripsi Teks
+def encryptGambar(data, publicKeyFile):
+    
+    fileName = 'dummy'
+    fileExtension = 'png'
+
+    # Konversi data ke bytes
+    # data = bytes(data)
+    data = bytes(data)
+
+    # membaca public key dari file
+    with open(publicKeyFile, 'rb') as f:
+        publicKey = f.read()
+    
+    # membuat public key object
+    key = RSA.import_key(publicKey)
+    sessionKey = os.urandom(16)
+
+    # melakukan proses enkripsi pada sesion key dengan menggunakan public key
+    cipher = PKCS1_OAEP.new(key)
+    encryptedSessionKey = cipher.encrypt(sessionKey)
+
+    # melakukan proses enkripsi pada data yang diinput dengan menggunakan session key yang susah dibuat
+    cipher = AES.new(sessionKey, AES.MODE_EAX)
+    ciphertext, tag = cipher.encrypt_and_digest(data)
+    []
+
+
+    # menyimpan hasil enkripsi ke dalam sebuah file
+    encryptedFile = fileName + '_encrypted.' + fileExtension
+    with open(encryptedFile, 'wb') as f:
+        [ f.write(x) for x in (encryptedSessionKey, cipher.nonce, tag, ciphertext) ]
+    print('\nHasil Enkripsi tersimpan di dalam file ' + encryptedFile + '\n')
+    
+
+# Fungsi Dekripsi Teks
+def decryptGambar(dataFile, privateKeyFile):
+
+    # membaca private key dari file
+    with open(privateKeyFile, 'rb') as f:
+        privateKey = f.read()
+        # create private key object
+        key = RSA.import_key(privateKey)
+
+
+    # membaca data dari file
+    with open(dataFile, 'rb') as f:
+
+        # membaca session key
+        encryptedSessionKey, nonce, tag, ciphertext = [ f.read(x) for x in (key.size_in_bytes(), 16, 16, -1) ]
+        
+    
+    # mendekripsikan session key
+    cipher = PKCS1_OAEP.new(key)
+    sessionKey = cipher.decrypt(encryptedSessionKey)
+
+    # melakukan proses dekripsi pada data dengan session key
+    cipher = AES.new(sessionKey, AES.MODE_EAX, nonce)
+    data = cipher.decrypt_and_verify(ciphertext, tag)
+
+    # save the decrypted data to file
+    [ fileName, fileExtension ] = dataFile.split('.')
+    print(fileName)
+    decryptedFile = fileName + '_decrypted.' + fileExtension
+    with open(decryptedFile, 'wb') as f:
+        f.write(data)
+
+    print('\nHasil gambar yang terdecypted tersimpan dalam file: ' + decryptedFile + '\n')
+
 # Fungsi Enkripsi Teks
 def encryptTeks(data, publicKeyFile):
     
@@ -76,7 +146,7 @@ pesan2 = pyfiglet.figlet_format("KELAS CR001", font = "slant", width= 250)
 
 print ("\n"+ pesan1)
 print (pesan2)
-input("Pencet tombol apapun untuk melanjutkan...")
+input("Pencet tombol enter untuk melanjutkan...")
 
 
 # MENU UTAMA PROGRAM
@@ -88,8 +158,42 @@ while True:
     print("3. Keluar Dari Program")  
     choice1 = int(input("\nMasukkan Pilihan Menu Anda:"))  
   
-    if choice1 == 1: 
-        print("apakek")
+    if choice1 == 1:
+        os.system('clear')
+        # citraChoice = 1
+        while True:
+            print("Menu Kriptografi untuk Citra/Gambar")  
+            print("1. Enkripsi")  
+            print("2. Dekripsi")  
+            print("3. Balik ke menu utama")  
+            choice2 = int(input("\nMasukkan Pilihan Menu Anda:"))
+            if choice2 == 1:
+                publicKeyFile = 'public.pem'
+                privateKeyFile = 'private.pem'
+                with open("dummy.png", "rb") as image:
+                    f = image.read()
+                b = bytearray(f)
+                encryptGambar(f, publicKeyFile)
+                with open("dummy_encrypted.png", "rb") as image_enc:
+                    g = image_enc.read()
+            elif choice2 == 2:
+                try:
+                    publicKeyFile = 'public.pem'
+                    privateKeyFile = 'private.pem'
+                    decryptFile = 'dummy_encrypted.png'
+                    decryptGambar(decryptFile, privateKeyFile)
+                    f = open('dummy_encrypted.png', 'wb')
+                    f.write(hasilDecrypted)
+                    f.close()
+                    with open("dummy_decrypted.png", "wb") as img:
+                        img.write(hasilDecrypted)
+                except Exception as err:
+                    print(f"Unexpected {err=}, {type(err)=}")
+            elif choice2 == 3:
+                break
+            else:  
+                print("\n Oops! Menu yang dipilih ga ada nih!")
+
 
       
     elif choice1 == 2:  
@@ -98,9 +202,9 @@ while True:
         publicKeyFile = 'public.pem'
         encryptTeks(data, publicKeyFile)
 
-        print('\n===============')
-        print('Hasil Dekripsi')
-        print('===============')
+        print('\n================================================================================')
+        print('\t\t\t\tHasil Dekripsi')
+        print('================================================================================')
         decryptFile = 'data_encrypted.txt'
         privateKeyFile = 'private.pem'
         decryptTeks(decryptFile, privateKeyFile)
@@ -114,3 +218,4 @@ while True:
       
     else:  
         print("\n Oops! Menu yang dipilih ga ada nih!")  
+        input("Pencet tombol apapun untuk melanjutkan...")
