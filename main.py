@@ -4,6 +4,7 @@ from Crypto.Cipher import PKCS1_OAEP, AES
 import os
 
 # Deklarasi variabel global untuk menampung value dari hasil dekripsi yang dilakukan nanti
+hasilDecryptedGbr = ''
 hasilDecrypted = ''
 
 
@@ -66,6 +67,9 @@ def decryptGambar(dataFile, privateKeyFile):
     # melakukan proses dekripsi pada data dengan session key
     cipher = AES.new(sessionKey, AES.MODE_EAX, nonce)
     data = cipher.decrypt_and_verify(ciphertext, tag)
+
+    global hasilDecryptedGbr
+    hasilDecryptedGbr = data
 
     # save the decrypted data to file
     [ fileName, fileExtension ] = dataFile.split('.')
@@ -159,9 +163,8 @@ while True:
     choice1 = int(input("\nMasukkan Pilihan Menu Anda:"))  
   
     if choice1 == 1:
-        os.system('clear')
-        # citraChoice = 1
         while True:
+            os.system('clear')
             print("Menu Kriptografi untuk Citra/Gambar")  
             print("1. Enkripsi")  
             print("2. Dekripsi")  
@@ -176,19 +179,22 @@ while True:
                 encryptGambar(f, publicKeyFile)
                 with open("dummy_encrypted.png", "rb") as image_enc:
                     g = image_enc.read()
+                input("Pencet tombol enter untuk melanjutkan...")
+                
             elif choice2 == 2:
                 try:
                     publicKeyFile = 'public.pem'
                     privateKeyFile = 'private.pem'
                     decryptFile = 'dummy_encrypted.png'
                     decryptGambar(decryptFile, privateKeyFile)
-                    f = open('dummy_encrypted.png', 'wb')
-                    f.write(hasilDecrypted)
+                    f = open('dummy_encrypted_decrypted.png', 'wb')
+                    f.write(hasilDecryptedGbr)
                     f.close()
-                    with open("dummy_decrypted.png", "wb") as img:
-                        img.write(hasilDecrypted)
+                    with open("dummy_encrypted_decrypted.png", "wb") as img:
+                        img.write(hasilDecryptedGbr)
                 except Exception as err:
                     print(f"Unexpected {err=}, {type(err)=}")
+                input("Pencet tombol enter untuk melanjutkan...")
             elif choice2 == 3:
                 break
             else:  
@@ -211,11 +217,11 @@ while True:
         print('Hasil dekripsi dari file data_encrypted.txt adalah : ' + hasilDecrypted.decode("utf-8"))
 
         print('\n')
-        input("Pencet tombol apapun untuk melanjutkan...")
+        input("Pencet tombol enter untuk melanjutkan...")
       
     elif choice1 == 3:  
         break  
       
     else:  
         print("\n Oops! Menu yang dipilih ga ada nih!")  
-        input("Pencet tombol apapun untuk melanjutkan...")
+        input("Pencet tombol enter untuk melanjutkan...")
