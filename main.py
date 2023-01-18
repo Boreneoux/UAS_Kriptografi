@@ -73,7 +73,6 @@ def decryptGambar(dataFile, privateKeyFile):
 
     # save the decrypted data to file
     [ fileName, fileExtension ] = dataFile.split('.')
-    print(fileName)
     decryptedFile = fileName + '_decrypted.' + fileExtension
     with open(decryptedFile, 'wb') as f:
         f.write(data)
@@ -165,27 +164,26 @@ while True:
     if choice1 == 1:
         while True:
             os.system('clear')
-            print("Menu Kriptografi untuk Citra/Gambar")  
+            print("===== Menu Kriptografi untuk Citra/Gambar =====")  
             print("1. Enkripsi")  
             print("2. Dekripsi")  
             print("3. Balik ke menu utama")  
             choice2 = int(input("\nMasukkan Pilihan Menu Anda:"))
             if choice2 == 1:
+                choice2a = (input("\nMasukkan nama file gambar yang ingin di enkripsi dengan ekstensinya (ex: dummy.png):"))
                 publicKeyFile = 'public.pem'
                 privateKeyFile = 'private.pem'
-                with open("dummy.png", "rb") as image:
+                with open(choice2a, "rb") as image:
                     f = image.read()
-                b = bytearray(f)
                 encryptGambar(f, publicKeyFile)
-                with open("dummy_encrypted.png", "rb") as image_enc:
-                    g = image_enc.read()
                 input("Pencet tombol enter untuk melanjutkan...")
                 
             elif choice2 == 2:
                 try:
+                    choice2b = (input("\nMasukkan file gambar yang ingin di dekripsi dengan ekstensinya (ex: dummy_encrypted.png): "))
                     publicKeyFile = 'public.pem'
                     privateKeyFile = 'private.pem'
-                    decryptFile = 'dummy_encrypted.png'
+                    decryptFile = choice2b
                     decryptGambar(decryptFile, privateKeyFile)
                     f = open('dummy_encrypted_decrypted.png', 'wb')
                     f.write(hasilDecryptedGbr)
@@ -199,25 +197,43 @@ while True:
                 break
             else:  
                 print("\n Oops! Menu yang dipilih ga ada nih!")
+                input("Pencet tombol enter untuk melanjutkan...")
 
 
       
-    elif choice1 == 2:  
-        choice1a = (input("\nMasukkan teks yang ingin di enkripsi: "))
-        data = choice1a.encode("ascii")
-        publicKeyFile = 'public.pem'
-        encryptTeks(data, publicKeyFile)
+    elif choice1 == 2: 
+        while True:
+            os.system('clear')
+            print("===== Menu Kriptografi untuk Citra/Gambar =====")  
+            print("1. Enkripsi")  
+            print("2. Dekripsi")  
+            print("3. Balik ke menu utama")  
+            choice3 = int(input("\nMasukkan Pilihan Menu Anda:")) 
+            if choice3 == 1:
+                choice3a = (input("\nMasukkan teks yang ingin di enkripsi: "))
+                data = choice3a.encode("ascii")
+                publicKeyFile = 'public.pem'
+                encryptTeks(data, publicKeyFile)
+                input("\nPencet tombol enter untuk melanjutkan...")
+       
+            elif choice3 == 2 :
+                choice3b = (input("\nMasukkan file teks yang ingin di dekripsi dengan ekstensinya (ex: data_encrypted.txt): "))
+                print('\n================================================================================')
+                print('\t\t\t\tHasil Dekripsi')
+                print('================================================================================')
+                decryptFile = choice3b
+                privateKeyFile = 'private.pem'
+                decryptTeks(decryptFile, privateKeyFile)
+                print('Hasil dekripsi dari file data_encrypted.txt adalah : ' + hasilDecrypted.decode("utf-8"))
 
-        print('\n================================================================================')
-        print('\t\t\t\tHasil Dekripsi')
-        print('================================================================================')
-        decryptFile = 'data_encrypted.txt'
-        privateKeyFile = 'private.pem'
-        decryptTeks(decryptFile, privateKeyFile)
-        print('Hasil dekripsi dari file data_encrypted.txt adalah : ' + hasilDecrypted.decode("utf-8"))
-
-        print('\n')
-        input("Pencet tombol enter untuk melanjutkan...")
+                print('\n')
+                input("Pencet tombol enter untuk melanjutkan...")
+            elif choice3 == 3:
+                break
+            else:  
+                print("\n Oops! Menu yang dipilih ga ada nih!")
+                input("Pencet tombol enter untuk melanjutkan...")
+        
       
     elif choice1 == 3:  
         break  
