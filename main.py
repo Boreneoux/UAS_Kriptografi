@@ -204,7 +204,7 @@ while True:
     elif choice1 == 2: 
         while True:
             os.system('clear')
-            print("===== Menu Kriptografi untuk Citra/Gambar =====")  
+            print("===== Menu Kriptografi untuk Teks =====")  
             print("1. Enkripsi")  
             print("2. Dekripsi")  
             print("3. Balik ke menu utama")  
